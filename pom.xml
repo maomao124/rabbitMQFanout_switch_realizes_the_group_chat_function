@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <!--
+      -maven项目核心配置文件-
+    Project name(项目名称)：rabbitMQFanout交换机实现群聊功能
+    Author(作者）: mao
+    Author QQ：1296193245
+    GitHub：https://github.com/maomao124/
+    Date(创建日期)： 2022/4/22
+    Time(创建时间)： 20:16
+    -->
+    <groupId>org.example</groupId>
+    <artifactId>rabbitMQFanout_switch_realizes_the_group_chat_function</artifactId>
+    <!--更改项，不能有中文，名称-->
+    <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <maven.compiler.source>16</maven.compiler.source>
+        <maven.compiler.target>16</maven.compiler.target>
+    </properties>
+    <!--依赖包配置放入位置-->
+    <dependencies>
+        <!--rabbitMQ 依赖客户端-->
+        <dependency>
+            <groupId>com.rabbitmq</groupId>
+            <artifactId>amqp-client</artifactId>
+            <version>5.14.2</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>rabbitMQFanout交换机实现群聊功能</finalName>
+        <!--更改项，也可以不改，打包的jar文件名称-->
+        <plugins>
+
+            <!--jar包依赖插件放入位置-->
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <appendAssemblyId>false</appendAssemblyId>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                    <archive>
+                        <manifest>
+                            <!-- 此处指定main方法入口的class -->
+                            <mainClass>mao.Run</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>assembly</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!--可选模块，添加console_hide模式的jar文件，配合本人开发的jar文件启动器使用。使用实时模板，或者使用下面的-->
+            <!--https://github.com/maomao124/run-jar-tool-3.0-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <executions>
+                    <execution>
+                        <id>package</id>
+                        <phase>package</phase>
+                        <configuration>
+                            <target>
+                                <echo message="*******************install-or-package*******************"/>
+                                <mkdir dir="${basedir}/target/classes"/>
+                                <!--创建文件夹-->
+                                <copy todir="${project.build.directory}/classes" overwrite="true">
+                                    <fileset dir="${project.build.directory}"
+                                             erroronmissingdir="false">
+                                        <include name="*.jar"/>
+                                    </fileset>
+                                </copy>
+
+                                <move file="${project.build.directory}/classes/rabbitMQFanout交换机实现群聊功能.jar"
+                                      tofile="${project.build.directory}/rabbitMQFanout交换机实现群聊功能_hide.jar"/>
+
+                                <copy todir="${project.build.directory}/classes" overwrite="true">
+                                    <fileset dir="${project.build.directory}"
+                                             erroronmissingdir="false">
+                                        <include name="*.jar"/>
+                                    </fileset>
+                                </copy>
+
+                                <move file="${project.build.directory}/classes/rabbitMQFanout交换机实现群聊功能.jar"
+                                      tofile="${project.build.directory}/rabbitMQFanout交换机实现群聊功能_args.jar"/>
+
+                                <move file="${project.build.directory}/classes/rabbitMQFanout交换机实现群聊功能_hide.jar"
+                                      tofile="${project.build.directory}/rabbitMQFanout交换机实现群聊功能_args_save.jar"/>
+                                <!--替换的名称-->
+
+                                <!--jar包备份-->
+                                <copy todir="H:/jar包/" overwrite="true">
+                                    <fileset dir="${project.build.directory}"
+                                             erroronmissingdir="false">
+                                        <include name="*.jar"/>
+                                    </fileset>
+                                </copy>
+
+                                <copy todir="${project.build.directory}/" overwrite="true">
+                                    <fileset dir="H:/jar包/"
+                                             erroronmissingdir="false">
+                                        <include name="*.bat"/>
+                                    </fileset>
+                                </copy>
+
+                                <copy todir="${project.build.directory}/" overwrite="true">
+                                    <fileset dir="H:/jar包/"
+                                             erroronmissingdir="false">
+                                        <include name="jar启动器.7z"/>
+                                    </fileset>
+                                </copy>
+
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>clean</id>
+                        <phase>clean</phase>
+                        <configuration>
+                            <target>
+                                <echo message="*******************clean*******************"/>
+                                <delete dir="target"/>
+                                <mkdir dir="${basedir}/target/classes"/>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+
+            <!--必须去除{project.build.directory}和{basedir}前面的空格-->
+            <!--
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <executions>
+                    <execution>
+                        <id>package</id>
+                        <phase>package</phase>
+                        <configuration>
+                            <target>
+                                <echo message="*******************install-or-package*******************"/>
+                                <mkdir dir="$ {basedir}/target/classes"/>
+
+                                <copy todir="$ {project.build.directory}/classes" overwrite="true">
+                                    <fileset dir="$ {project.build.directory}"
+                                             erroronmissingdir="false">
+                                        <include name="*.jar"/>
+                                    </fileset>
+                                </copy>
+
+                                <move file="$ {project.build.directory}/classes/rabbitMQFanout交换机实现群聊功能.jar"
+                                      tofile="$ {project.build.directory}/rabbitMQFanout交换机实现群聊功能_hide.jar"/>
+                                      
+                                <copy todir="$PROJECT.BUILD.DIRECTORY$/classes" overwrite="true">
+                                    <fileset dir="$PROJECT.BUILD.DIRECTORY$"
+                                             erroronmissingdir="false">
+                                        <include name="*.jar"/>
+                                    </fileset>
+                                </copy>
+
+                                <move file="$PROJECT.BUILD.DIRECTORY$/classes/rabbitMQFanout交换机实现群聊功能.jar"
+                                      tofile="$PROJECT.BUILD.DIRECTORY$/rabbitMQFanout交换机实现群聊功能_args.jar"/>
+
+                                <move file="$PROJECT.BUILD.DIRECTORY$/classes/rabbitMQFanout交换机实现群聊功能_hide.jar"
+                                      tofile="$PROJECT.BUILD.DIRECTORY$/rabbitMQFanout交换机实现群聊功能_args_save.jar"/>
+
+                                <copy todir="H:/jar包/" overwrite="true">
+                                    <fileset dir="$ {project.build.directory}"
+                                             erroronmissingdir="false">
+                                        <include name="*.jar"/>
+                                    </fileset>
+                                </copy>
+                                
+                                <copy todir="$PROJECT.BUILD.DIRECTORY$/" overwrite="true">
+                                    <fileset dir="H:/jar包/"
+                                             erroronmissingdir="false">
+                                        <include name="*.bat"/>
+                                    </fileset>
+                                </copy>
+
+                                <copy todir="$PROJECT.BUILD.DIRECTORY$/" overwrite="true">
+                                    <fileset dir="H:/jar包/"
+                                             erroronmissingdir="false">
+                                        <include name="jar启动器.7z"/>
+                                    </fileset>
+                                </copy>
+
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>clean</id>
+                        <phase>clean</phase>
+                        <configuration>
+                            <target>
+                                <echo message="*******************clean*******************"/>
+                                <delete dir="target"/>
+                                <mkdir dir="$ {basedir}/target/classes"/>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            -->
+        </plugins>
+    </build>
+
+</project>
